@@ -8,32 +8,77 @@ const Snake = () => {
   const [gameOver, setGameOver] = useState(false);
   const [score, setScore] = useState(0);
   const [highScore, setHighScore] = useState(
-    parseInt(localStorage.getItem("highScore")) || 0 // Load high score from localStorage
+    parseInt(localStorage.getItem("highScore")) || 0
   );
 
-  // Handle keypress for direction
+  // Touch position variables
+  const touchStartRef = React.useRef({ x: 0, y: 0 });
+  const touchEndRef = React.useRef({ x: 0, y: 0 });
+
+  // Handle direction change
+  const changeDirection = (newDirection) => {
+    if (
+      (newDirection === "UP" && direction !== "DOWN") ||
+      (newDirection === "DOWN" && direction !== "UP") ||
+      (newDirection === "LEFT" && direction !== "RIGHT") ||
+      (newDirection === "RIGHT" && direction !== "LEFT")
+    ) {
+      setDirection(newDirection);
+    }
+  };
+
+  // Handle keyboard controls
   useEffect(() => {
     const handleKeyPress = (e) => {
       switch (e.key) {
         case "ArrowUp":
-          if (direction !== "DOWN") setDirection("UP");
+          changeDirection("UP");
           break;
         case "ArrowDown":
-          if (direction !== "UP") setDirection("DOWN");
+          changeDirection("DOWN");
           break;
         case "ArrowLeft":
-          if (direction !== "RIGHT") setDirection("LEFT");
+          changeDirection("LEFT");
           break;
         case "ArrowRight":
-          if (direction !== "LEFT") setDirection("RIGHT");
+          changeDirection("RIGHT");
           break;
         default:
           break;
       }
     };
+
     window.addEventListener("keydown", handleKeyPress);
     return () => window.removeEventListener("keydown", handleKeyPress);
   }, [direction]);
+
+  // Handle touch controls
+  const handleTouchStart = (e) => {
+    touchStartRef.current = {
+      x: e.touches[0].clientX,
+      y: e.touches[0].clientY,
+    };
+  };
+
+  const handleTouchEnd = (e) => {
+    touchEndRef.current = {
+      x: e.changedTouches[0].clientX,
+      y: e.changedTouches[0].clientY,
+    };
+
+    const dx = touchEndRef.current.x - touchStartRef.current.x;
+    const dy = touchEndRef.current.y - touchStartRef.current.y;
+
+    if (Math.abs(dx) > Math.abs(dy)) {
+      // Horizontal swipe
+      if (dx > 0) changeDirection("RIGHT");
+      else changeDirection("LEFT");
+    } else {
+      // Vertical swipe
+      if (dy > 0) changeDirection("DOWN");
+      else changeDirection("UP");
+    }
+  };
 
   // Snake movement
   useEffect(() => {
@@ -71,16 +116,15 @@ const Snake = () => {
     if (checkCollision(newHead)) {
       setGameOver(true);
 
-      // Update high score if the current score is greater
       if (score > highScore) {
         setHighScore(score);
-        localStorage.setItem("highScore", score); // Save to localStorage
+        localStorage.setItem("highScore", score);
       }
     } else if (isEatingFood(newHead)) {
       newSnake.unshift([]);
       setFood(generateFood());
-      setSpeed(speed - 10); // Increase speed
-      setScore(score + 10); // Increment score
+      setSpeed(speed - 10);
+      setScore(score + 10);
     }
 
     setSnake(newSnake);
@@ -104,8 +148,12 @@ const Snake = () => {
   ];
 
   return (
-    <div className="relative w-[400px] h-[400px] bg-gray-800 border-4 border-gray-700 mx-auto mt-8">
-      {/* Display the score and high score */}
+    <div
+      className="relative w-[400px] h-[400px] bg-gray-800 border-4 border-gray-700 mx-auto mt-8"
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+    >
+      {/* Display the score */}
       <div className="absolute top-0 left-0 p-2 bg-gray-900 text-white text-xl">
         Score: {score}
       </div>
