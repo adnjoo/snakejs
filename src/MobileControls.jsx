@@ -1,6 +1,6 @@
 const MobileControls = ({ onDirectionChange }) => {
   return (
-    <div className="mt-4 flex flex-col items-center gap-2 flex sm:hidden">
+    <div className="mt-4 flex flex-col items-center gap-2 flex lg:hidden">
       {/* Up Button */}
       <button
         className="w-16 h-16 bg-gray-800 text-white rounded-full hover:bg-gray-700"
