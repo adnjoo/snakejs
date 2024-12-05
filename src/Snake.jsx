@@ -6,6 +6,10 @@ const Snake = () => {
   const [direction, setDirection] = useState("RIGHT");
   const [speed, setSpeed] = useState(200);
   const [gameOver, setGameOver] = useState(false);
+  const [score, setScore] = useState(0);
+  const [highScore, setHighScore] = useState(
+    parseInt(localStorage.getItem("highScore")) || 0 // Load high score from localStorage
+  );
 
   // Handle keypress for direction
   useEffect(() => {
@@ -66,10 +70,17 @@ const Snake = () => {
 
     if (checkCollision(newHead)) {
       setGameOver(true);
+
+      // Update high score if the current score is greater
+      if (score > highScore) {
+        setHighScore(score);
+        localStorage.setItem("highScore", score); // Save to localStorage
+      }
     } else if (isEatingFood(newHead)) {
       newSnake.unshift([]);
       setFood(generateFood());
       setSpeed(speed - 10); // Increase speed
+      setScore(score + 10); // Increment score
     }
 
     setSnake(newSnake);
@@ -94,9 +105,25 @@ const Snake = () => {
 
   return (
     <div className="relative w-[400px] h-[400px] bg-gray-800 border-4 border-gray-700 mx-auto mt-8">
+      {/* Display the score and high score */}
+      <div className="absolute top-0 left-0 p-2 bg-gray-900 text-white text-xl">
+        Score: {score}
+      </div>
+      <div className="absolute top-0 right-0 p-2 bg-gray-900 text-white text-xl">
+        High Score: {highScore}
+      </div>
+
       {gameOver ? (
-        <div className="absolute inset-0 flex justify-center items-center bg-gray-900 bg-opacity-75">
+        <div className="absolute inset-0 flex flex-col justify-center items-center bg-gray-900 bg-opacity-75">
           <h1 className="text-white text-3xl">Game Over</h1>
+          <p className="text-white text-lg mt-2">Final Score: {score}</p>
+          <p className="text-white text-lg">High Score: {highScore}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            Restart Game
+          </button>
         </div>
       ) : (
         <>
