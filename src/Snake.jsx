@@ -113,7 +113,7 @@ const Snake = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-900 flex flex-col items-center">
+    <div className="bg-gray-900 flex flex-col items-center">
       <div className="relative w-[400px] h-[400px] bg-gray-800 border-4 border-gray-700 mt-8">
         <div className="absolute top-0 left-0 p-2 bg-gray-900 text-white text-xl">
           Score: {score}
