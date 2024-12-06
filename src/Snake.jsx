@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import MobileControls from "./MobileControls";
 
+const MIN_SPEED = 50; // Minimum speed is 50ms
+
 const Snake = () => {
   const [snake, setSnake] = useState([[10, 10]]);
   const [food, setFood] = useState([5, 5]);
@@ -88,7 +90,7 @@ const Snake = () => {
     } else if (isEatingFood(newHead)) {
       newSnake.unshift([]);
       setFood(generateFood());
-      setSpeed(speed - 10);
+      setSpeed((prevSpeed) => Math.max(prevSpeed - 10, MIN_SPEED));
       setScore(score + 10);
     }
 

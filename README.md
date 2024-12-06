@@ -2,7 +2,9 @@
 
 A simple Snake Game built with React and Vite.
 
-<img src='./public/scrn.png' width='300'>
+<img src='./public/scrn.png' width='200'>
+<br/>
+<img src='./public/yots.webp' width='200'>
 
 ## Setup
 
